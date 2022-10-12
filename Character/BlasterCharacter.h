@@ -32,17 +32,22 @@ protected:
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
-
+	// called from tick function. 
+	void AimOffset(float DeltaTime);
 private:
+	// This UPROPERTY tells the Camera how far it needs to be from the PC
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
 
+	// This UPROPERTY will be used to have the viewport attach to the PC
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
 
+	// This is a widget used for testing who is a client, and who is the server. Modified through UE project gamemode bp to change if it's visible or not.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverheadWidget;
 	
+	// This UPROPERTY is tagged with an OnRep_Notify which flags it within the UE so anytime it's changed the server will be notified.
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
@@ -50,12 +55,20 @@ private:
 	// Creates a replicated Weapon variable that's sent to the server to update pick capabilities of weapons
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
+	// When this UPROPERTY allows us to access functions/variables/information from the CombatComponent.h file
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* Combat;
 
+	// This function tells the server what to do when the equip button is pressed.
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
 	
+	// These 2 AO variables are the logic used in conjuction with BlasterAnimInstance.h/cpp's AO variables to update PC weapon angle information
+	float AO_Yaw;
+	float AO_Pitch;
+	// This stores our base aim rotation to update our weapons rotation within the animationbp
+	FRotator StartingAimRotation;
+
 // This public is for getters and setters
 public:	
 	void SetOverlappingWeapon(AWeapon* Weapon);
@@ -63,4 +76,5 @@ public:
 	bool IsWeaponEquip();
 	// Getter function used to return aiming variable from CombatComponent
 	bool IsAiming();
+
 };
