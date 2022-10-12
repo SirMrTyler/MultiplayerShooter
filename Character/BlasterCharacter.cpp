@@ -280,6 +280,16 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
+	// We need to workaround UE's default Pitch/yaw compression for multiplayer (it turns pitch float into an unsigned int which cannot be negative)
+	// This problem only affects other clients view of the locally controlled PC. So we need to say !LocallyControlled()
+	if (AO_Pitch > 90.f && !IsLocallyControlled())
+	{
+		// Map pitch from [270, 360] to [-90, 0]
+		FVector2D InRange(270.f, 360.f);
+		FVector2d OutRange(-90.f, 0.f);
+		// GetMappedRangeValueClamped() takes the InRange and converts it to the OutRange for the AO_Pitch variable.
+		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
 }
 
 // This is a getter function that returns whether or not a player is aiming.
