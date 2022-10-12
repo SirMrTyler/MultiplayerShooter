@@ -10,6 +10,7 @@
 #include "WitchyShooter/Weapon/Weapon.h"
 #include "WitchyShooter/BlasterComponents/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -241,7 +242,12 @@ bool ABlasterCharacter::IsWeaponEquip()
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
 	// if PC doesn't have a weapon, this logic will not run and we will leave the function early
-	if (Combat && Combat->EquippedWeapon == nullptr) return;
+	if (Combat && Combat->EquippedWeapon == nullptr) 
+	{
+		// We initialize StartingAimRotation when a weapon is unequipped so that when equipped the aim isn't set to the world zero (it's aiming in front of the PC like it's supposed to).
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		return;
+	}
 
 	// We need to know whether the player character is moving or not because that will change which animation changes we're going to use.
 	FVector Velocity = GetVelocity();
@@ -249,16 +255,31 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
     float Speed = Velocity.Size();
 	// This sets bIsInAir equal to a native unreal engine function that returns true when the player character is falling.
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
 	// Standing still, and not jumping
 	if (Speed == 0.f && !bIsInAir)
 	{
+		// We declare this FRotator so we can know where the PC is currently aiming
+		FRotator CurrentAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		// DeltaAimRotation is Declared so we know how far the weapon has to move to get back to the base aim position
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+		// AO_Yaw is set every frame so the weapon moves as the PC moves their mouse
+		AO_Yaw = DeltaAimRotation.Yaw;
+		// bUseControllerRotationYaw is a native UE APawn class member that allows us to use the PC's mouse rotation adjustments when true or another source when false. When not moving use AO_Yaw not PC rotation.
+		bUseControllerRotationYaw = false;
 
 	}
 	// PC is moving or jumping
 	if (Speed < 0.f || bIsInAir)
 	{
-
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		// AO_Yaw stays zero while moving so that when we stop moving the weapon resets to it's base position 
+		AO_Yaw = 0.f;
+		// When moving we don't want the gun to sway so we're going to set controlrotation to the mouse input of PC
+		bUseControllerRotationYaw = true;
 	}
+
+	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 // This is a getter function that returns whether or not a player is aiming.

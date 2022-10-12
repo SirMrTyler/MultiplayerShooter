@@ -76,5 +76,8 @@ public:
 	bool IsWeaponEquip();
 	// Getter function used to return aiming variable from CombatComponent
 	bool IsAiming();
+	// Getter that can be used on BlasterAnimInstance to find out BlasterCharacter's AimOffset information/logic (Make sure to call within a tick function)
+	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
+	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 
 };

@@ -19,12 +19,15 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
 private:
+	// UPROPERTY gives Character AnimBP, and AnimInstance C++ access to BlasterCharacter member functions/variables
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class ABlasterCharacter* BlasterCharacter;	
 
+	// UPROPERTY passes current speed to the Character's AnimBP
 	UPROPERTY(BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float Speed;
 
+	// UPROPERTY lets the Character's AnimBP know when the PC is the air or not
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsInAir;
 
@@ -44,14 +47,19 @@ private:
 	// bAiming is used to update our AnimBP when the player presses the aim key.
 	bool bAiming;
 
+	// UPROPERTY updates movement animation depending on direction of player movementa
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float YawOffset;
 
+	// UPROPERTY updates movement animation when player moves the mouse quickly
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float Lean;
 
+	// Used to store the rotation of the character in the previous frame
 	FRotator CharacterRotationLastFrame;
+	// Used to store character rotation as of current frame
 	FRotator CharacterRotation;
+	// Used to store the difference between last frame and current frame rotation
 	FRotator DeltaRotation;
 
 	// The 2 following UPROPERTIES will be used to update the look angle of the player during animations according to AO_Yaw/Pitch in our BlasterCharacter file
