@@ -38,6 +38,8 @@ ABlasterCharacter::ABlasterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
@@ -267,16 +269,18 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		AO_Yaw = DeltaAimRotation.Yaw;
 		// bUseControllerRotationYaw is a native UE APawn class member that allows us to use the PC's mouse rotation adjustments when true or another source when false. When not moving use AO_Yaw not PC rotation.
 		bUseControllerRotationYaw = false;
+		TurnInPlace(DeltaTime);
 
 	}
 	// PC is moving or jumping
-	if (Speed < 0.f || bIsInAir)
+	if (Speed > 0.f || bIsInAir)
 	{
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		// AO_Yaw stays zero while moving so that when we stop moving the weapon resets to it's base position 
 		AO_Yaw = 0.f;
 		// When moving we don't want the gun to sway so we're going to set controlrotation to the mouse input of PC
 		bUseControllerRotationYaw = true;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
@@ -289,6 +293,18 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		FVector2d OutRange(-90.f, 0.f);
 		// GetMappedRangeValueClamped() takes the InRange and converts it to the OutRange for the AO_Pitch variable.
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
+}
+
+void ABlasterCharacter::TurnInPlace(float DeltaTime)
+{
+	if (AO_Yaw > 90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if (AO_Yaw < -90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Left;
 	}
 }
 

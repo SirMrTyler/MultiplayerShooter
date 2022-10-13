@@ -38,6 +38,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
     bIsCrouched = BlasterCharacter->bIsCrouched; // Is PC crouching or not
     bAiming = BlasterCharacter->IsAiming(); // Here we set bAiming equal to a getter function in our Char.h that pulls the status of an aiming bull declared in CombatComponent
+    TurningInPlace = BlasterCharacter->GetTurningInPlace();
     
     // Offset Yaw for Strafing
     FRotator AimRotation = BlasterCharacter->GetBaseAimRotation(); // This gives us the relative global rotation

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "WitchyShooter/BlasterTypes/TurningInPlace.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
@@ -69,6 +70,10 @@ private:
 	// This stores our base aim rotation to update our weapons rotation within the animationbp
 	FRotator StartingAimRotation;
 
+	// The turning in place logic will be done in this class, then passed through a getter function to the animation instance
+	ETurningInPlace TurningInPlace;
+	void TurnInPlace(float DeltaTime);
+
 // This public is for getters and setters
 public:	
 	void SetOverlappingWeapon(AWeapon* Weapon);
@@ -81,5 +86,7 @@ public:
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
 	// Returns the currently equipped weapon
 	AWeapon* GetEquippedWeapon();
+	// This getter passes the logic completed on the TurningInPlace enum variable to other classes should they need access to it.
+	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 
 };
