@@ -5,6 +5,7 @@
 #include "BlasterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "WitchyShooter/Weapon/Weapon.h"
 
 void UBlasterAnimInstance::NativeInitializeAnimation()
 {
@@ -34,9 +35,10 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling(); // Changes anim based on whether the PC is in air or not
     bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false; // States whether the player is moving or not
     bWeaponEquipped = BlasterCharacter->IsWeaponEquip(); // Here we set bWeaponEquipped equal to a getter function in our Char.h that pulls the equipped weapon status of the player from CombatComponent
+    EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
     bIsCrouched = BlasterCharacter->bIsCrouched; // Is PC crouching or not
     bAiming = BlasterCharacter->IsAiming(); // Here we set bAiming equal to a getter function in our Char.h that pulls the status of an aiming bull declared in CombatComponent
-
+    
     // Offset Yaw for Strafing
     FRotator AimRotation = BlasterCharacter->GetBaseAimRotation(); // This gives us the relative global rotation
     FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(BlasterCharacter->GetVelocity()); // This gives us the relative global rotational movement direction of our character mesh
@@ -57,4 +59,20 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     // Updates AnimationOffset data every frame according to logic performed within BlasterCharacter.cpp
     AO_Yaw = BlasterCharacter->GetAO_Yaw();
     AO_Pitch = BlasterCharacter->GetAO_Pitch();
+
+    // Verifies weapon is equipped, what the weapon is, access to the weapons mesh, and access to the character's mesh
+    if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && BlasterCharacter->GetMesh())
+    {
+        // We're beginning to attach the left hand to the weapons socket within the world space as named within the weapons SM (LeftHandSocket).
+        LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+        FVector OutPosition;
+        FRotator OutRotation;
+        // We're accessing the PC's right/left hands location/rotation relative to the right hands world space and storing this data in OutPosition and OutRotation
+        BlasterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+        // Here we take the data we stored in OutPosition and use it to set the location of PC's left hand
+        LeftHandTransform.SetLocation(OutPosition);
+        // Here we take the data we stored in OutRotation and use it to set the rotation of PC's left hand
+        LeftHandTransform.SetRotation(FQuat(OutRotation)); // FQuat is a quaternion. A quaternion takes the quotient of two vectors within a 3d space (the 3d space being the PC's right hand).
+
+    }
 }

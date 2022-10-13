@@ -31,6 +31,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// This UFUNCTION provides the logic for when something overlaps with the weapons hitbox
 	UFUNCTION()
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -41,6 +42,7 @@ protected:
 		const FHitResult& SweepResult
 	);
 
+	// This function provides the logic for when something stops overlapping with the weapons hitbox
 	UFUNCTION()
 	void OnSphereEndOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -50,22 +52,30 @@ protected:
 	);
 
 private:
+	// UPROPERTY allows manipulations of a weapons asset, features, and various parameters.
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
 
+	// UPROPERTY allows weapon to have a sphere for collision
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class USphereComponent* AreaSphere;
 
+	// UPROPERTY gives PC access to various weapon states while a weapon is equipped. Such as ammo count, full auto vs semi auto, etc...
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
+	// Allows variable replication to server anytime the WeaponState variable is changed.
 	UFUNCTION()
 	void OnRep_WeaponState();
 
+	// UPROPERTY allows a widget to appear above the weapon telling the PC what button to press to pick it up.
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
 
 public:	
 	void SetWeaponState(EWeaponState State);
-	FORCEINLINE USphereComponent* GetAreaSphere() const {return AreaSphere;}
+	// Used to pass collision sphere information to other classes
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere;}
+	// Used to pass weaponmesh information to other classes
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh;} 
 };

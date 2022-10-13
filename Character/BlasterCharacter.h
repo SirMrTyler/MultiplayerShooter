@@ -79,5 +79,7 @@ public:
 	// Getter that can be used on BlasterAnimInstance to find out BlasterCharacter's AimOffset information/logic (Make sure to call within a tick function)
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
+	// Returns the currently equipped weapon
+	AWeapon* GetEquippedWeapon();
 
 };

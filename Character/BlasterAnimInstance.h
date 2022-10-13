@@ -39,6 +39,9 @@ private:
 	// bWeaponEquipped is used to update our AnimBP when the player equips/unequips a weapon
 	bool bWeaponEquipped;
 
+	// This is used to attach left hand to lefthand socket of weapon.
+	class AWeapon* EquippedWeapon;
+
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	// bWeaponEquipped is used to update our AnimBP when the player presses the crouch key
 	bool bIsCrouched;
@@ -65,7 +68,10 @@ private:
 	// The 2 following UPROPERTIES will be used to update the look angle of the player during animations according to AO_Yaw/Pitch in our BlasterCharacter file
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float AO_Yaw;
-
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float AO_Pitch;
+
+	// This UPROPERTY is used to attach the left hand to the weapon's under barrel
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	FTransform LeftHandTransform;
 };
