@@ -33,6 +33,7 @@ protected:
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
+	
 	// called from tick function. 
 	void AimOffset(float DeltaTime);
 private:
@@ -67,6 +68,8 @@ private:
 	// These 2 AO variables are the logic used in conjuction with BlasterAnimInstance.h/cpp's AO variables to update PC weapon angle information
 	float AO_Yaw;
 	float AO_Pitch;
+	// Will be used to rotate root bone of PC while standing in place.
+	float InterpAO_Yaw;
 	// This stores our base aim rotation to update our weapons rotation within the animationbp
 	FRotator StartingAimRotation;
 
@@ -77,16 +80,17 @@ private:
 // This public is for getters and setters
 public:	
 	void SetOverlappingWeapon(AWeapon* Weapon);
-	// Getter function used to return weapon equipped status from CombatComponent
+
+	// These 3 getters derive from CombatComponent.cpp
 	bool IsWeaponEquip();
-	// Getter function used to return aiming variable from CombatComponent
 	bool IsAiming();
+
 	// Getter that can be used on BlasterAnimInstance to find out BlasterCharacter's AimOffset information/logic (Make sure to call within a tick function)
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch; }
-	// Returns the currently equipped weapon
+	
 	AWeapon* GetEquippedWeapon();
-	// This getter passes the logic completed on the TurningInPlace enum variable to other classes should they need access to it.
+	// This getter passes logic in TurningInPlace enum variable to other classes
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 
 };

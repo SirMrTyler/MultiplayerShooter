@@ -21,6 +21,7 @@ public:
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 protected:
 	virtual void BeginPlay() override;
+
 	void SetAiming(bool bIsAiming);
 
 	UFUNCTION(Server, Reliable)
@@ -37,15 +38,15 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bAiming;
+	UPROPERTY(Replicated)
+	bool bSprinting;
 
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, Category = "Movement");
 	float BaseWalkSpeed;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	float AimWalkSpeed;
 
 public:	
-	
-
 		
 };

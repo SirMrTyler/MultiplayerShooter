@@ -39,6 +39,7 @@ ABlasterCharacter::ABlasterCharacter()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
+	// We 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
@@ -71,7 +72,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	AimOffset(DeltaTime);
 }
 
-// This function handles linking the functions associated with keybinds between our C++ and the UE editor
+// Binds input functions to key presses
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -150,10 +151,14 @@ void ABlasterCharacter::CrouchButtonPressed()
 	}
 }
 
+void ABlasterCharacter::AimButtonReleased()
+{
+	// Add a main menu with the option of toggling/releasing aim
+}
+
 // This function handles what happens when the keybind for Aiming is pressed.
 void ABlasterCharacter::AimButtonPressed()
 {
-	
 	if (Combat)
 	{
 		// If the character is aiming; stop aiming. If the player isn't aiming; then the PC will aim.
@@ -168,11 +173,6 @@ void ABlasterCharacter::AimButtonPressed()
 			return;
 		}
 	}
-}
-
-void ABlasterCharacter::AimButtonReleased()
-{
-	
 }
 
 // This function will be linked to a keybind within SetupPlayerInputComponent. When keybind is pressed weapon is attached to the player characters skeletal mesh.
@@ -234,10 +234,14 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	}
 }
 
-// This function is a getter that passes whether or not a player has a weapon equipped
 bool ABlasterCharacter::IsWeaponEquip()
 {
 	return (Combat && Combat->EquippedWeapon);
+}
+
+bool ABlasterCharacter::IsAiming()
+{
+	return (Combat && Combat->bAiming);
 }
 
 // This will be used to update our character weapon aiming location/rotation every frame
@@ -247,7 +251,6 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	if (Combat && Combat->EquippedWeapon == nullptr) 
 	{
 		// We initialize StartingAimRotation when a weapon is unequipped so that when equipped the aim isn't set to the world zero (it's aiming in front of the PC like it's supposed to).
-		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		return;
 	}
 
@@ -267,9 +270,14 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		// AO_Yaw is set every frame so the weapon moves as the PC moves their mouse
 		AO_Yaw = DeltaAimRotation.Yaw;
+		if (TurningInPlace == ETurningInPlace::ETIP_NotTurning)
+		{
+			InterpAO_Yaw = AO_Yaw;
+		}
 		// bUseControllerRotationYaw is a native UE APawn class member that allows us to use the PC's mouse rotation adjustments when true or another source when false. When not moving use AO_Yaw not PC rotation.
-		bUseControllerRotationYaw = false;
+		bUseControllerRotationYaw = true;
 		TurnInPlace(DeltaTime);
+		
 
 	}
 	// PC is moving or jumping
@@ -298,6 +306,7 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 void ABlasterCharacter::TurnInPlace(float DeltaTime)
 {
+	// This if statement passes turning right logic to the animation. The else statement passes turn left logic.
 	if (AO_Yaw > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Right;
@@ -306,12 +315,19 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 	{
 		TurningInPlace = ETurningInPlace::ETIP_Left;
 	}
-}
-
-// This is a getter function that returns whether or not a player is aiming.
-bool ABlasterCharacter::IsAiming()
-{
-	return (Combat && Combat->bAiming);
+	// This if statement rotates the character when turning in place.
+	if (TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 4.f);
+		AO_Yaw = InterpAO_Yaw;
+		// Here, we're checking if the character has turned enough. If so, the PC stops turning.
+		if (FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			// Resets our aim after turning enough.
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
 }
 
 AWeapon* ABlasterCharacter::GetEquippedWeapon()

@@ -19,63 +19,47 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
+
+protected:
+
 private:
-	// UPROPERTY gives Character AnimBP, and AnimInstance C++ access to BlasterCharacter member functions/variables
+	// UPROPERTY gives AnimBP/AnimInstance.cpp access to BlasterCharacter.h member functions/variables
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class ABlasterCharacter* BlasterCharacter;	
 
-	// UPROPERTY passes current speed to the Character's AnimBP
 	UPROPERTY(BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float Speed;
-
-	// UPROPERTY lets the Character's AnimBP know when the PC is the air or not
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	bool bIsInAir;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	// bIsAccelerating is used to update our animBP to state whether the character is moving
-	bool bIsAccelerating;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	// bWeaponEquipped is used to update our AnimBP when the player equips/unequips a weapon
-	bool bWeaponEquipped;
-
-	// This is used to attach left hand to lefthand socket of weapon.
-	class AWeapon* EquippedWeapon;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	// bWeaponEquipped is used to update our AnimBP when the player presses the crouch key
-	bool bIsCrouched;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	// bAiming is used to update our AnimBP when the player presses the aim key.
-	bool bAiming;
-
-	// UPROPERTY updates movement animation depending on direction of player movementa
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float YawOffset;
-
-	// UPROPERTY updates movement animation when player moves the mouse quickly
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float Lean;
-
-	// Used to store the rotation of the character in the previous frame
-	FRotator CharacterRotationLastFrame;
-	// Used to store character rotation as of current frame
-	FRotator CharacterRotation;
-	// Used to store the difference between last frame and current frame rotation
-	FRotator DeltaRotation;
-
-	// The 2 following UPROPERTIES will be used to update the look angle of the player during animations according to AO_Yaw/Pitch in our BlasterCharacter file
+	float RootYawOffset;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float AO_Yaw;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float AO_Pitch;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsCrouched;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsAiming;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsInAir;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsAccelerating;
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bIsWeaponEquipped;
+	class AWeapon* EquippedWeapon;
 
-	// This UPROPERTY is used to attach the left hand to the weapon's under barrel
+	// UPROPERTY updates movement animation when player moves the mouse quickly
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float Lean;
+	FRotator CharacterRotationLastFrame;
+	FRotator CharacterRotation;
+	// Used to store the difference between last frame and current frame rotation
+	FRotator DeltaRotation;
+	
+	// Used to attach left hand to weapon
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	FTransform LeftHandTransform;
-
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	ETurningInPlace TurningInPlace;
 };

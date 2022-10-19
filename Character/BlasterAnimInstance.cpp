@@ -32,12 +32,13 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     Speed = Velocity.Size();
 
     // Updates variables passed every frame to the AnimBP to update PC statuses
-    bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling(); // Changes anim based on whether the PC is in air or not
-    bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false; // States whether the player is moving or not
-    bWeaponEquipped = BlasterCharacter->IsWeaponEquip(); // Here we set bWeaponEquipped equal to a getter function in our Char.h that pulls the equipped weapon status of the player from CombatComponent
+    bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling();
+    bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f ? true : false;
+    bIsWeaponEquipped = BlasterCharacter->IsWeaponEquip(); 
+    bIsCrouched = BlasterCharacter->bIsCrouched;
+    bIsAiming = BlasterCharacter->IsAiming();
+    
     EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
-    bIsCrouched = BlasterCharacter->bIsCrouched; // Is PC crouching or not
-    bAiming = BlasterCharacter->IsAiming(); // Here we set bAiming equal to a getter function in our Char.h that pulls the status of an aiming bull declared in CombatComponent
     TurningInPlace = BlasterCharacter->GetTurningInPlace();
     
     // Offset Yaw for Strafing
@@ -62,7 +63,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     AO_Pitch = BlasterCharacter->GetAO_Pitch();
 
     // Verifies weapon is equipped, what the weapon is, access to the weapons mesh, and access to the character's mesh
-    if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && BlasterCharacter->GetMesh())
+    if (bIsWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && BlasterCharacter->GetMesh())
     {
         // We're beginning to attach the left hand to the weapons socket within the world space as named within the weapons SM (LeftHandSocket).
         LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
@@ -77,3 +78,4 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
     }
 }
+
