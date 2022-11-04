@@ -15,6 +15,7 @@ If you're attempting to try a specific version; follow these steps:
 7. Enjoy!
 
 Download Links:
+- Version 2.5: https://drive.google.com/file/d/1AyQ369JOQd0aQhi2-b7MBoOG_GaH5Ssy/view?usp=sharing
 - Version 2.4: https://drive.google.com/file/d/1yD2YGptwKQaAJkeTL0btt7_OYKoHXonV/view?usp=sharing
 - Version 2.3: https://drive.google.com/file/d/1oSd4N5a-YnlDw8aeihp3DoLSRcdZAvgD/view?usp=sharing
 - Version 2.0: https://drive.google.com/file/d/1LMQv-R80PtL-RqZgy7E57KROjL2S-Wg_/view?usp=sharing
