@@ -14,10 +14,14 @@ class WITCHYSHOOTER_API ACasing : public AActor
 public:	
 	ACasing();
 
+private:
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CasingMesh;
+
 protected:
 	virtual void BeginPlay() override;
 
-public:	
 
 
 };
