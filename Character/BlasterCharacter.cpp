@@ -77,7 +77,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	AimOffset(DeltaTime);
 }
 
-// Binds input functions to key presses
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -110,7 +109,6 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
-// This function propells the player character forward in the x axis direction
 void ABlasterCharacter::MoveForward(float AxisValue)
 {
 	if (Controller != nullptr && AxisValue != 0.f)
@@ -124,7 +122,6 @@ void ABlasterCharacter::MoveForward(float AxisValue)
 	}		
 }
 
-// This function does the same thing as the MoveForward() function but instead of in the x direction it moves the PC in the Y direction.
 void ABlasterCharacter::MoveRight(float AxisValue)
 {
 	if (Controller != nullptr && AxisValue != 0.f)
@@ -135,19 +132,16 @@ void ABlasterCharacter::MoveRight(float AxisValue)
 	}
 }
 
-// This function uses the axis value read by the mouse/right stick of the player to update the horizontal direction the PC is looking
 void ABlasterCharacter::Turn(float AxisValue)
 {
 	AddControllerYawInput(AxisValue);
 }
 
-// This function does the same things as Turn() except in the vertical direction
 void ABlasterCharacter::LookUp(float AxisValue)
 {
 	AddControllerPitchInput(AxisValue);
 }
 
-// This function uses UE's native jump function to make the PC jump.
 void ABlasterCharacter::JumpButtonPressed()
 {
 	// This if statement allows uncrouching when pressing the jump button.
@@ -158,7 +152,6 @@ void ABlasterCharacter::JumpButtonPressed()
 	this->Jump();
 }
 
-// This function handles what happens when the keybind for crouch is pressed.
 void ABlasterCharacter::CrouchButtonPressed()
 {
 	// If Statement Logic: If the PC is crouched they will stand up, if they are not crouched they will crouch.
@@ -177,7 +170,6 @@ void ABlasterCharacter::AimButtonReleased()
 	// Add a main menu with the option of toggling/releasing aim
 }
 
-// This function handles what happens when the keybind for Aiming is pressed.
 void ABlasterCharacter::AimButtonPressed()
 {
 	if (Combat)
@@ -212,7 +204,6 @@ void ABlasterCharacter::FireButtonReleased()
 	}
 }
 
-// This function will be linked to a keybind within SetupPlayerInputComponent. When keybind is pressed weapon is attached to the player characters skeletal mesh.
 void ABlasterCharacter::EquipButtonPressed()
 {
 	if (Combat)
@@ -228,7 +219,6 @@ void ABlasterCharacter::EquipButtonPressed()
 	}
 }
 
-// This function replicates our EquipButtonPressed() feature so that the server knows what it needs to do and what to pass to each client
 void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 {
 	if (Combat)
@@ -237,7 +227,6 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 	}
 }
 
-// This function will be called whenever a player is overlapping a weapon
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	// If the PC is no longer overlapping a weapons Capsule Component stop displaying the widget
@@ -258,7 +247,6 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-// This function sends all of the data from our SetOverlappingWeapon() function to the server to be replicated.
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
 	if (OverlappingWeapon)
@@ -281,7 +269,6 @@ bool ABlasterCharacter::IsAiming()
 	return (Combat && Combat->bAiming);
 }
 
-// This will be used to update our character weapon aiming location/rotation every frame
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
 	// if PC doesn't have a weapon, this logic will not run and we will leave the function early
@@ -373,4 +360,3 @@ AWeapon* ABlasterCharacter::GetEquippedWeapon()
 	if (Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;
 }
-
