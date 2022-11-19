@@ -33,12 +33,16 @@ protected:
 		int32 OtherBodyIndex);
 
 private:	
-	UPROPERTY(EditAnywhere, Category = "Portal Properties")
+	UPROPERTY(EditAnywhere, Category = "Portal Effects")
 	class UStaticMeshComponent* PortalMesh;
 	UPROPERTY(EditAnywhere, Category = "Portal Properties")
 	class UBoxComponent* BoxComp;
 	UPROPERTY(EditAnywhere, Category = "Portal Properties")
 	class UArrowComponent* ArrowComp;
+	
+	UPROPERTY(EditAnywhere, Category = "Portal Effects")
+	class UNiagaraSystem* PortalParticles;
+	class UNiagaraComponent* PortalParticlesComponent;
 
 	UFUNCTION()
 	void EnterPortal(class AActor* OverlappedActor, AActor* OtherActor);
@@ -49,12 +53,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Portal Properties")
 	APortal* OtherPortal;
 
+	UPROPERTY(EditAnywhere, Category = "Portal Effects")
+	class USoundCue* PortalEntranceSound;
+	UPROPERTY(EditAnywhere, Category = "Portal Effects")
+	class USoundCue* PortalExitSound;
+
 	class ABlasterCharacter* BlasterCharacter;
 
-	UPROPERTY(ReplicatedUsing = OnRep_bTeleporting, VisibleAnywhere, Category = "Portal Properties")
+	UPROPERTY(Replicated)
 	bool bTeleporting;
-
-	UFUNCTION()
-	void OnRep_bTeleporting();
 
 };
