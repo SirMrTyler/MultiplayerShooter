@@ -76,6 +76,13 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
         // Here we take the data we stored in OutRotation and use it to set the rotation of PC's left hand
         LeftHandTransform.SetRotation(FQuat(OutRotation)); // FQuat is a quaternion. A quaternion takes the quotient of two vectors within a 3d space (the 3d space being the PC's right hand).
 
+        if (BlasterCharacter->IsLocallyControlled())
+        {
+            bLocallyControlled = true;
+            FTransform RightHandTransform = BlasterCharacter->GetMesh()->GetSocketTransform(FName("hand_r"), ERelativeTransformSpace::RTS_World);
+            RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() -BlasterCharacter->GetHitTarget()));
+        }
+
     }
 }
 
