@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "WitchyShooter/BlasterTypes/TurningInPlace.h"
+#include "WitchyShooter/Interfaces/InteractWithCrosshairsInterface.h"
 #include "BlasterCharacter.generated.h"
 
 UCLASS()
-class WITCHYSHOOTER_API ABlasterCharacter : public ACharacter
+class WITCHYSHOOTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
 {
 	GENERATED_BODY()
 

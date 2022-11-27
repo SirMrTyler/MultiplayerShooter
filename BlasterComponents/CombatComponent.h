@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "WitchyShooter/HUD/BlasterHUD.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -53,8 +54,6 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bAiming;
-	UPROPERTY(Replicated)
-	bool bSprinting;
 
 
 	UPROPERTY(EditAnywhere, Category = "Movement");
@@ -62,15 +61,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float AimWalkSpeed;
 
-
 	bool bFireButtonPressed;
 
 	// HUD and Crosshairs
 	float CrosshairVelocityFactor;
 	float CrosshairAimingFactor;
 	float CrosshairInAirFactor;
-
+	float CrosshairShootingFactor;
+	
 	FVector HitTarget;
+	
+	FHUDPackage HUDPackage;
+
 
 	// Aiming and FOV
 

@@ -12,7 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "WitchyShooter/PlayerController/BlasterPlayerController.h"
-#include "WitchyShooter/HUD/BlasterHUD.h"
+//#include "WitchyShooter/HUD/BlasterHUD.h"
 #include "Camera/CameraComponent.h"
 
 UCombatComponent::UCombatComponent()
@@ -21,6 +21,14 @@ UCombatComponent::UCombatComponent()
 
 	BaseWalkSpeed = 500.f;
 	AimWalkSpeed = 350.f;
+}
+
+void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, bAiming);
 }
 
 void UCombatComponent::BeginPlay()
@@ -64,7 +72,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 		HUD = HUD == nullptr ? Cast<ABlasterHUD>(Controller->GetHUD()) : HUD;
 		if (HUD)
 		{
-			FHUDPackage HUDPackage;
 			if (EquippedWeapon)
 			{
 				HUDPackage.CrosshairsCenter = EquippedWeapon->CrosshairsCenter;
@@ -103,12 +110,22 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 			if (bAiming)
 			{
-				HUDPackage.CrosshairSpread = CrosshairAimingFactor + CrosshairInAirFactor;
+				CrosshairAimingFactor = FMath::FInterpTo(CrosshairAimingFactor, 0.58f, DeltaTime, 30.f);
 			}
 			else
 			{
-				HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+				CrosshairAimingFactor = FMath::FInterpTo(CrosshairAimingFactor, 0.f, DeltaTime, 30.f);
 			}
+
+			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+
+				HUDPackage.CrosshairSpread = 
+					0.25f + 
+					CrosshairVelocityFactor + 
+					CrosshairInAirFactor - 
+					CrosshairAimingFactor +
+					CrosshairShootingFactor;
+
 
 			HUD->SetHUDPackage(HUDPackage);
 		}
@@ -133,14 +150,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 	}
 }
 
-void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
-	DOREPLIFETIME(UCombatComponent, bAiming);
-	DOREPLIFETIME(UCombatComponent, bSprinting);
-}
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
@@ -203,6 +213,11 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		ServerFire(HitResult.ImpactPoint);
+
+		if (EquippedWeapon)
+		{
+			CrosshairShootingFactor = 0.99f; 
+		}
 	}
 }
 
@@ -254,7 +269,20 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			End,
 			ECC_Visibility
 		);
-	}
 
+		if (TraceHitResult.GetActor())
+		{
+			FString ActorName = TraceHitResult.GetActor()->GetActorNameOrLabel();
+			UE_LOG(LogTemp, Warning, TEXT("Actor Hits: %s"), *ActorName);
+		}
+		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::Red;
+		}
+		else
+		{
+			HUDPackage.CrosshairsColor = FLinearColor::White;
+		}
+	}
 }
 
