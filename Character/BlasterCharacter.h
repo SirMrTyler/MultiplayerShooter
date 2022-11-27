@@ -20,7 +20,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
-
+	
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();	
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -37,7 +40,7 @@ protected:
 	void FireButtonPressed();
 	void FireButtonReleased();
 	
-
+	void PlayHitReactMontage();
 	
 private:
 	// This UPROPERTY tells the Camera how far it needs to be from the PC
@@ -74,6 +77,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* HitReactMontage;
+
+
+	
+	void HideCamIfCharacterClose();
+
+	UPROPERTY(EditAnywhere)
+	float HideCharacterCameraThreshold = 200.f;
 // This public is for getters and setters
 public:	
 	void SetOverlappingWeapon(AWeapon* Weapon);
