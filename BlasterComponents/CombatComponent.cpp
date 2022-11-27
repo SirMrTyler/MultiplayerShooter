@@ -280,7 +280,6 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		if (TraceHitResult.GetActor())
 		{
 			FString ActorName = TraceHitResult.GetActor()->GetActorNameOrLabel();
-			UE_LOG(LogTemp, Warning, TEXT("Actor Hits: %s"), *ActorName);
 		}
 		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
 		{
