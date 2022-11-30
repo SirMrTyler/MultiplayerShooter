@@ -37,9 +37,9 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     bIsWeaponEquipped = BlasterCharacter->IsWeaponEquip(); 
     bIsCrouched = BlasterCharacter->bIsCrouched;
     bIsAiming = BlasterCharacter->IsAiming();
-    
     EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
     TurningInPlace = BlasterCharacter->GetTurningInPlace();
+    bRotateRootBone = BlasterCharacter->ShouldRotateRootBone();
     
     // Offset Yaw for Strafing
     FRotator AimRotation = BlasterCharacter->GetBaseAimRotation(); // This gives us the relative global rotation

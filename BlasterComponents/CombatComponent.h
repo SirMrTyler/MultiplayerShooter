@@ -33,7 +33,7 @@ protected:
 	void OnRep_EquippedWeapon();
 
 	void FireButtonPressed(bool bPressed);
-
+	void Fire();
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
 
@@ -63,7 +63,9 @@ private:
 
 	bool bFireButtonPressed;
 
-	// HUD and Crosshairs
+	/**
+	* HUD and Crosshairs
+	*/
 	float CrosshairVelocityFactor;
 	float CrosshairAimingFactor;
 	float CrosshairInAirFactor;
@@ -73,12 +75,10 @@ private:
 	
 	FHUDPackage HUDPackage;
 
-
-	// Aiming and FOV
-
-	// FOV when not aiming; set to camera's base FOV
+	/**
+	* FOV Management
+	*/
 	float DefaultFOV;
-	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ZoomedFOV = 30.f;
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -86,6 +86,17 @@ private:
 
 	float CurrentFOV;
 	void InterpFOV(float DeltaTime);
+
+	/**
+	 * Automatirc Fire
+	 */
+
+	FTimerHandle FireTimer;
+	bool bCanFire = true;
+
+	void StartFireTimer();
+	void FireTimerFinished();
+
 public:	
 		
 };
